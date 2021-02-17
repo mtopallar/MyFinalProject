@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.Text;
 using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
+using FluentValidation;
 
 namespace Business.Concrete
 {
     public class ProductManager : IProductService
     {
         // Bir iş sınıfı başka sınıfları newlemez.
+       
 
         private IProductDal _productDal;
 
@@ -21,13 +26,23 @@ namespace Business.Concrete
             _productDal = productDal;
         }
 
+        [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
+            
+
+            //validation; doğrulama nesnenin iş kurallarına uygunluğunu yapısal olarak kontrol etmeye yarar.
+            //iş kuralı ise bizim iş gereksinimlerimize uygunluktur. ilkyardım:70,motor:70,trafik:70 => ehliyet
+            
+            //ValidationTool.Validate(new ProductValidator(),product); //bu bir iş kodu değil!!!
+            //Loglama
+            //Cacheremove
+            //performance
+            //transaction
+            //yetkilendirme  burası çorba oluyor.
+
             // business codes
-            if (product.ProductName.Length < 2)
-            {
-                return new ErrorResult(Messages.ProductNameInvalid); //return olursa metod biter hatırla.
-            }
+
             _productDal.Add(product);
             // kod kırılmadıysa Add'i geçmiş demektir.
             return new SuccessResult(Messages.ProductAdded);
@@ -35,7 +50,7 @@ namespace Business.Concrete
 
         public IDataResult<List<Product>> GetAll()
         {
-            if (DateTime.Now.Hour == 22)
+            if (DateTime.Now.Hour == 20)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
             }

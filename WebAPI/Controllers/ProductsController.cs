@@ -16,9 +16,9 @@ namespace WebAPI.Controllers
     public class ProductsController : ControllerBase
     {
         //Loosely coupled
-        //IoC Container -- Inversion of control (IProduct ın somutu ne çakılması) bellekte bir tane new ledim.
+        //IoC Container -- Inversion of control (IProduct ın somutu nedir çakılması) bellekte bir tane new ledim.
         //AOP tüm metodları loglamak ILogger.Log yerine [LogAspect] --> bir metodun önünde veya sonunda, yada bir metod hata verdiğinde çalışan kod parçacıklarına AOP diyoruz. Business içinde business yazıyoruz.[Transection], [Performans] [LogAspect] [RomoveCache] vs vs. Autofac bize AOP imkanı da IoC imkanı da sunuyor.
-
+        //Postsharp Autofac in daha iyi ancak ücretli versiyonu.
         private IProductService _productService;
 
         public ProductsController(IProductService productService)
