@@ -9,11 +9,12 @@ using Core.CrossCuttingConcerns.Validation;
 
 namespace Core.Aspects.Autofac.Validation
 {
-    public class ValidationAspect:MethodInterception
+    public class ValidationAspect : MethodInterception //Aspect (Metodun başında sonunda hata durumunda çalışacak)
     {
         private Type _validatorType;
         public ValidationAspect(Type validatorType)
         {
+            //defensive coding
             if (!typeof(IValidator).IsAssignableFrom(validatorType))
             {
                 throw new System.Exception("Bu bir doğrulama sınıfı değil");
@@ -28,7 +29,7 @@ namespace Core.Aspects.Autofac.Validation
             var entities = invocation.Arguments.Where(t => t.GetType() == entityType);
             foreach (var entity in entities)
             {
-                ValidationTool.Validate(validator,entity);
+                ValidationTool.Validate(validator, entity);
             }
         }
     }

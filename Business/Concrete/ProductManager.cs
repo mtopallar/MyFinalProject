@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -17,35 +19,38 @@ namespace Business.Concrete
     public class ProductManager : IProductService
     {
         // Bir iş sınıfı başka sınıfları newlemez.
-       
+        //iş kurallarını spagetti yazarsan katmanlı mimari yapsan da sistem spagetti olur.
 
         private IProductDal _productDal;
-
-        public ProductManager(IProductDal productDal)
+        ICategoryService _categoryService;
+        //Bir ENTITY MANAGER kendisi hariç başka dalı enjekte EDEMEZ!*********************
+        public ProductManager(IProductDal productDal, ICategoryService categoryService)
         {
             _productDal = productDal;
+            _categoryService = categoryService;
         }
+
 
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
-            
+            //business code
+            //bir kategoride en fazla 10 ürün olabilir.
+            //Aynı isimde ürün eklenemez.
+            //Eğer mevcut kategori sayısı 15'i geçtiyse sisteme yeni ürün eklenemez.(Microservis mimarisi)
 
-            //validation; doğrulama nesnenin iş kurallarına uygunluğunu yapısal olarak kontrol etmeye yarar.
-            //iş kuralı ise bizim iş gereksinimlerimize uygunluktur. ilkyardım:70,motor:70,trafik:70 => ehliyet
-            
-            //ValidationTool.Validate(new ProductValidator(),product); //bu bir iş kodu değil!!!
-            //Loglama
-            //Cacheremove
-            //performance
-            //transaction
-            //yetkilendirme  burası çorba oluyor.
+           IResult result =  BusinessRules.Run(CheckIfProductNameExist(product.ProductName),
+                CheckIfProductCountOfCategoryCorrect(product.CategoryId), CheckIfCategoyLimitExceded());
 
-            // business codes
+           if (result!=null)
+           {
+               return result;
+           }
 
-            _productDal.Add(product);
-            // kod kırılmadıysa Add'i geçmiş demektir.
-            return new SuccessResult(Messages.ProductAdded);
+           _productDal.Add(product);
+           return new SuccessResult(Messages.ProductAdded);
+
+           
         }
 
         public IDataResult<List<Product>> GetAll()
@@ -76,6 +81,43 @@ namespace Business.Concrete
         public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
+        }
+        [ValidationAspect(typeof(ProductValidator))]
+        public IResult Update(Product product)
+        {
+
+            throw new NotImplementedException();
+        }
+
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId) //iş kodu "parçacığı"
+        {
+            //Select (*) from Products where categoryId=1
+            var result = _productDal.GetAll(p => p.CategoryId == categoryId).Count;
+            if (result >= 10)
+            {
+                return new ErrorResult(Messages.ProductCountOfCategoryError);
+            }
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfProductNameExist(string productName)
+        {
+            var result = _productDal.GetAll(p => p.ProductName == productName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.ProductNameAlreadyExists);
+            }
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfCategoyLimitExceded()
+        {
+            var result = _categoryService.GetAll();
+            if (result.Data.Count>15)
+            {
+               return new ErrorResult(Messages.CategoryLimitExceded);
+            }
+            return new SuccessResult();
         }
     }
 }
