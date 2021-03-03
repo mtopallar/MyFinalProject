@@ -17,5 +17,7 @@ namespace Business.Abstract
         IResult Add(Product product);
         IResult Update(Product product);
 
+        IResult AddTransectionalTest(Product product); //100tl den 10 lira aktarırken aktarım yapandan 10 tl düşer diğer hesaba 10 tl eklenir. 2 adet veri tabanı işi var. ilk hesaptan 10tl düşüp iinciye ekleyemezse işlemi geri alması gerekir.
+
     }
 }
