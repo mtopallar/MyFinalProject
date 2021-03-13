@@ -46,7 +46,7 @@ namespace WebAPI
             //services.AddSingleton<IProductService,ProductManager>(); //singleton tüm bellekte 1 instance.(data yoksa)
             //services.AddSingleton<IProductDal,EfProductDal>();
 
-            
+            services.AddCors();
 
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
@@ -87,6 +87,8 @@ namespace WebAPI
             }
 
             //asp.net in yaþam döngüsünde hangi servisin hangi sýrayla devreye gireceðini belirtiyoruz.
+
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader()); //4200 angular ýn portu
 
             app.UseHttpsRedirection();
 
