@@ -88,6 +88,8 @@ namespace WebAPI
 
             //asp.net in yaþam döngüsünde hangi servisin hangi sýrayla devreye gireceðini belirtiyoruz.
 
+            app.ConfigureCustomExceptionMiddleware(); //bunu biz ekledik exception için
+
             app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader()); //4200 angular ýn portu
 
             app.UseHttpsRedirection();
