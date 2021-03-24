@@ -34,9 +34,10 @@ namespace Business.Concrete
             _categoryService = categoryService;
         }
 
-        //[SecuredOperation("product.add,admin")] //çalışıyor sürekli login istemesin diye commitledim.
+        [SecuredOperation("product.add,admin")] //çalışıyor sürekli login istemesin diye commitledim.
         [ValidationAspect(typeof(ProductValidator))]
         [CacheRemoveAspect("IProductService.Get")]
+        
         public IResult Add(Product product)
         {
             //business code
