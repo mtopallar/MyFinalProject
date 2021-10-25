@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Core.Utilities.Security.JWT
 {
-    public class JwtHelper:ITokenHelper
+    public class JwtHelper : ITokenHelper
     {
         public IConfiguration Configuration { get; } //Appsettings.json daki token optionsları okumak için.
         private TokenOptions _tokenOptions;
@@ -21,7 +21,7 @@ namespace Core.Utilities.Security.JWT
         {
             Configuration = configuration;
             _tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>(); //oku ve TokenOptions a map le
-            
+
         }
         public AccessToken CreateToken(User user, List<OperationClaim> operationClaims)
         {
@@ -40,16 +40,16 @@ namespace Core.Utilities.Security.JWT
 
         }
 
-        public JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user, 
+        public JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user,
             SigningCredentials signingCredentials, List<OperationClaim> operationClaims)
         {
             var jwt = new JwtSecurityToken(
-                issuer:tokenOptions.Issuer,
-                audience:tokenOptions.Audience,
-                expires:_accessTokenExpiration,
-                notBefore:DateTime.Now,
-                claims: SetClaims(user,operationClaims),
-                signingCredentials:signingCredentials
+                issuer: tokenOptions.Issuer, //token payload'undaki registered (reserved) clam: iss
+                audience: tokenOptions.Audience, // token payload'undaki registered (reserved) clam: aud
+                expires: _accessTokenExpiration, // token payload'undaki registered (reserved) clam: exp
+                notBefore: DateTime.Now, // token payload'undaki registered (reserved) clam: nbf
+                claims: SetClaims(user, operationClaims), // token payload'ındaki bizim verdiğimiz bilgiler.
+                signingCredentials: signingCredentials // token ın son kısmında (signature) kullanılacak algoritma ve secret key bilgileri
             );
             return jwt;
         }
@@ -60,9 +60,11 @@ namespace Core.Utilities.Security.JWT
             claims.AddNameIdentifier(user.Id.ToString());
             claims.AddEmail(user.Email);
             claims.AddName($"{user.FirstName} {user.LastName}");
-            claims.AddRoles(operationClaims.Select(c=>c.Name).ToArray());
-            
+            claims.AddRoles(operationClaims.Select(c => c.Name).ToArray());
+
             return claims;
         }
+
+        /* SetClaims metodundaki bilgiler de token ın payload kısmındaki claimler içine ekleniyor. CreateJwtSecurityToken metodundaki claim alanlarında sadece reserved claimler in değerleri bir set edilirken bu metodda da reserved olmayan, kullanıcıya ve rollerine ait bilgiler örneğin mail, user id, kullanıcının rolleri gibi veriler set diliyor. */
     }
 }
