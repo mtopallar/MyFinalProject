@@ -22,3 +22,5 @@ namespace Core.DependencyResolvers
         }
     }
 }
+
+//** API'nin Startup dosyasında yazdığımız services.Add diyerek oluşturduğumuz merkezi bağımlılıklarımızı artık Startup da değil burada verebiliyoruz. Böylelikle bu bağımlılıkları daha geride yönetmiş oluyoruz. Tabi ki bu modülü kullanacağını API'ye bir şekilde belirtmeliyiz. Bunu yapabilmek için de Core.Extensions altındaki ServiceCollectionExtensions sınıfını hazırladık ve bu extensionı API'nin Startup ında çağırdık.

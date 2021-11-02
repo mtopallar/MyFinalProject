@@ -16,4 +16,7 @@ namespace Core.Utilities.IoC
         }
     }
     // IServiceCollections zaten Microsoft.Extensions.DependencyInjection dan geliyor.
+
 }
+
+//** Bu tool ile Service Collection nesnesinin arkasındaki ServiceProvider nesnesine erişiyoruz. ServiceProvider bizim çin merkezi servis ynetim nesnesi olacak. .NETCore kendi içindeki interfaceleri bildiği ve kendiliğinden enjekte edebildiği için (IServiceCollection gibi) bu interfaceleri direk kullanabiliyoruz. Bu interface in karşılığı budur dememiz gerekmiyor. Özetle biz bu Tool ile .NetCore un kendi servislerine erişebiliyoruz demek oluyor.
