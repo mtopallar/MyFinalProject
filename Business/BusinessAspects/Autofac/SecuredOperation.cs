@@ -17,7 +17,7 @@ namespace Business.BusinessAspects.Autofac
     public class SecuredOperation:MethodInterception
     {
         private string[] _roles;
-        private IHttpContextAccessor _httpContextAccessor; //İçinde JWT da olan her bir istekte (istek zarfında) her istek için bir http context i (thread i) oluşur.
+        private IHttpContextAccessor _httpContextAccessor; //İçinde JWT da olan her bir istekte (istek zarfında) her istek için bir http context i (thread i) oluşur. httpContextAccessor bir isteğin gelmesi ile oluşur ve response yani cevap verilip istek tamamlanana kadar ilgili isteği takip eder.
 
         public SecuredOperation(string roles)
         {
